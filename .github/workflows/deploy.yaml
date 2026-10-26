@@ -1,0 +1,65 @@
+name: Test, Build, and Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "LICENSE"
+
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "LICENSE"
+
+  workflow_dispatch:
+
+# All branches and event types share the same concurrency group.
+# A newer run cancels the previous run of this workflow.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: echo "TODO - replace with your test commands"
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build project
+        run: echo "TODO - replace with your build commands"
+
+  deploy:
+    needs: build
+    # Deploy only from main, never from a pull request.
+    # Manual runs must also select main to deploy.
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' ||
+       github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Deploy project
+        run: echo "TODO - replace with your deployment commands"
